@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen bg-background text-foreground">
         <header className="bg-background text-primary py-4 shadow-sm sticky top-0 z-10">
           <div className="container px-4 mx-auto">
-            <h1 className="text-xl font-bold">JurisGenie</h1>
+            <h1 className="text-xl font-bold">KatwiranAI</h1>
           </div>
         </header>
         {children}
