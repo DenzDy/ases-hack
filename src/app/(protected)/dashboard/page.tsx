@@ -1,19 +1,15 @@
 'use client';
 
 import React from 'react';
-import type { Session } from '@supabase/supabase-js';
+import { useSession } from '@/lib/SessionContext';
 
-interface DashboardPageProps {
-  session?: Session;
-}
+const DashboardPage: React.FC = () => {
+  const session = useSession();
+  const userEmail = session?.user?.email ?? 'Unknown';
 
-const DashboardPage: React.FC<DashboardPageProps> = ({ session }) => {
   return (
     <div>
-      <h1>You are authenticated</h1>
-      <pre className="text-sm text-gray-600">
-        {JSON.stringify(session, null, 2)}
-      </pre>
+      <h1>You are authenticated as {userEmail}</h1>
     </div>
   );
 };
