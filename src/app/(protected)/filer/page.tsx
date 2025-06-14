@@ -10,6 +10,7 @@ const DashboardPage: React.FC = () => {
     return (
         <div>
             <h1>You are authenticated as {userEmail}</h1>
+            Welcome to filer
         </div>
     );
 };
