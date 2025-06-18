@@ -71,7 +71,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="text-teal-600" size={20} />
-              <span className="text-xl font-semibold text-gray-800">KatwiranAI</span>
+              <span className="text-xl font-black text-gray-800 font-serif">KatwiranAI</span>
             </Link>
 
             <div className="hidden md:flex gap-3 ml-4">
