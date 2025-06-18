@@ -6,11 +6,11 @@ import { Card } from '@/components/ui/card';
 import { ModeToggle } from '@/components/ui/mode-toggle';
 import { FileUpload } from '@/components/ui/file-upload';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { File, Plus } from 'lucide-react';
+import { File, Plus, AlertCircle } from 'lucide-react';
 
 type Message = {
   text: string;
-  sender: 'user' | 'bot';
+  sender: 'user' | 'bot' | 'system';
   files?: FilePreview[];
 };
 
@@ -27,9 +27,18 @@ export default function ChatPage() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [files, setFiles] = useState<FilePreview[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  
+  const customPrompt = `You are a helpful assistant powered by DeepSeek R1 via Ollama. 
+Follow these rules strictly:
+1. Never reveal your internal thought process
+2. Never use <think> or </think> tags in responses
+3. Provide concise, direct answers
+4. Maintain a friendly but professional tone
+5. Your name is Katwiran.`;
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -54,37 +63,121 @@ export default function ChatPage() {
     setFiles(prev => prev.filter(file => file.id !== id));
   };
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim() && files.length === 0) return;
+  const verifyOllamaConnection = async () => {
+    setConnectionStatus('checking');
+    try {
+      const res = await fetch('http://localhost:11434/api/tags');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      
+      const data = await res.json();
+      if (!data.models || data.models.length === 0) {
+        throw new Error("No models found - run 'ollama pull deepseek'");
+      }
+      
+      setConnectionStatus('connected');
+      return true;
+    } catch (error) {
+      setConnectionStatus('error');
+      setMessages(prev => [...prev, { 
+        text: `System: ${error instanceof Error ? error.message : 'Connection failed'}`, 
+        sender: 'system'
+      }]);
+      return false;
+    }
+  };
 
-    // Add user message with files
-    const newMessage: Message = { 
+  useEffect(() => {
+    verifyOllamaConnection();
+  }, []);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if ((!inputValue.trim() && files.length === 0) || isLoading) return;
+
+    const userMessage: Message = { 
       text: inputValue, 
       sender: 'user',
       files: [...files] 
     };
-    setMessages(prev => [...prev, newMessage]);
+
+    setMessages(prev => [...prev, userMessage]);
+    const loadingMessage: Message = { text: 'Thinking...', sender: 'bot' };
+    setMessages(prev => [...prev, loadingMessage]);
     
     setInputValue('');
     setFiles([]);
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        text: files.length > 0 
-          ? `I received ${files.length} file(s): ${files.map(f => f.name).join(', ')}` 
-          : `You said: "${inputValue}"`,
-        sender: 'bot' 
-      }]);
-    }, 1000);
+    try {
+      // Verify connection before sending
+      if (!await verifyOllamaConnection()) {
+        throw new Error('Cannot connect to Ollama');
+      }
+
+      const response = await fetch('/ai-agent/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+          customPrompt: customPrompt,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      setMessages(prev => prev.map(msg => 
+        msg === loadingMessage 
+          ? { ...msg, text: data.response || "Received empty response" } 
+          : msg
+      ));
+
+    } catch (error) {
+      setMessages(prev => prev.map(msg =>
+        msg === loadingMessage
+          ? { 
+              ...msg, 
+              text: `Error: ${error instanceof Error ? error.message : 'Request failed'}`,
+              sender: 'system'
+            }
+          : msg
+      ));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getConnectionStatusBadge = () => {
+    switch(connectionStatus) {
+      case 'connected': 
+        return <span className="text-green-500">● Connected</span>;
+      case 'error':
+        return <span className="text-red-500">● Disconnected</span>;
+      default:
+        return <span className="text-yellow-500">● Connecting...</span>;
+    }
   };
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <div className="container px-4 mx-auto flex flex-col h-[calc(100vh-80px)] py-4 gap-4">
-        <div className="flex justify-end">
-          <ModeToggle />
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">AI Assistant</h1>
+          <div className="flex items-center gap-4">
+            <div className="text-sm flex items-center">
+              {getConnectionStatusBadge()}
+              <button 
+                onClick={verifyOllamaConnection}
+                className="ml-2 text-xs underline text-muted-foreground hover:text-primary"
+              >
+                Retry
+              </button>
+            </div>
+            <ModeToggle />
+          </div>
         </div>
         
         <Card className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-background">
@@ -92,7 +185,11 @@ export default function ChatPage() {
             <div 
               key={index} 
               className={`max-w-[80%] flex flex-col gap-2 ${
-                msg.sender === 'user' ? 'self-end items-end' : 'self-start items-start'
+                msg.sender === 'user' 
+                  ? 'self-end items-end' 
+                  : msg.sender === 'system'
+                    ? 'self-center items-center'
+                    : 'self-start items-start'
               }`}
             >
               {msg.files && msg.files.length > 0 && (
@@ -102,7 +199,9 @@ export default function ChatPage() {
                 <div className={`p-3 rounded-lg ${
                   msg.sender === 'user' 
                     ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground'
+                    : msg.sender === 'system'
+                      ? 'bg-destructive/10 text-destructive-foreground border border-destructive/30'
+                      : 'bg-muted text-muted-foreground'
                 }`}>
                   {msg.text}
                 </div>
@@ -124,6 +223,7 @@ export default function ChatPage() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Type your message..."
                 className="pr-12"
+                disabled={isLoading || connectionStatus !== 'connected'}
               />
               <input
                 type="file"
@@ -131,6 +231,7 @@ export default function ChatPage() {
                 onChange={handleFileChange}
                 className="hidden"
                 multiple
+                disabled={isLoading}
               />
               <Button
                 type="button"
@@ -138,12 +239,25 @@ export default function ChatPage() {
                 size="icon"
                 className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
                 onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <Button type="submit">Send</Button>
+            <Button 
+              type="submit" 
+              disabled={isLoading || connectionStatus !== 'connected'}
+            >
+              {isLoading ? 'Sending...' : 'Send'}
+            </Button>
           </div>
+          
+          {connectionStatus === 'error' && (
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              <span>Cannot connect to Ollama. Make sure it's running.</span>
+            </div>
+          )}
         </form>
       </div>
     </ThemeProvider>
