@@ -5,7 +5,9 @@ import { FaLinkedinIn, FaFacebookF, FaYoutube, FaPhoneAlt } from 'react-icons/fa
 const Footer: React.FC = () => {
     return (
         <footer className="w-full bg-white border-t border-gray-200 text-sm text-gray-600 px-6 py-6">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
+            <div className="mx-auto  px-6 pt-[1.5rem] pb-[2rem]"></div>
+            {/* <div className="mx-auto max-w-[90rem] px-6 pt-[1.5rem] pb-[2rem]"></div> */}
+            <div className="max-w-[90rem] px-6 mx-auto flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
                 {/* Left Section */}
                 <div className="space-y-3">
                     <div className="flex items-center space-x-2">

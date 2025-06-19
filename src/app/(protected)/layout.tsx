@@ -1,29 +1,23 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { LayoutDashboard, LogOut, User } from 'lucide-react';
-import { SessionContext } from '@/lib/SessionContext';
-import { supabase } from '@/lib/supabaseClient';
-import type { Session } from '@supabase/supabase-js';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import { SessionContext } from "@/lib/SessionContext";
+import type { Session } from "@supabase/supabase-js";
 
-export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+import TopNav from "../../components/protected-components/topNav"
+import Sidebar from "../../components/protected-components/sideBar"
+
+
+export default function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const getSession = async () => {
@@ -31,91 +25,38 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       setSession(data.session);
       setLoading(false);
 
-      if (!data.session) {
-        router.push('/login');
-      }
+      if (!data.session) router.push("/login");
     };
 
     getSession();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      setSession(newSession);
-      if (!newSession) router.push('/login');
-    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        setSession(newSession);
+        if (!newSession) router.push("/login");
+      }
+    );
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    return () => listener.subscription.unsubscribe();
   }, [router]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
-  if (loading) return <p className="p-8">Loading...</p>;
-
-  const navLinkClasses = (path: string) =>
-    `px-3 py-2 rounded-md text-sm font-medium ${
-      pathname === path
-        ? 'bg-teal-100 text-teal-800 font-semibold'
-        : 'text-gray-600 hover:text-black'
-    }`;
+  if (loading) return <div className="p-8">Loading…</div>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Left side */}
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <LayoutDashboard className="text-teal-600" size={20} />
-              <span className="text-xl font-black text-gray-800 font-serif">KatwiranAI</span>
-            </Link>
+    <SessionContext.Provider value={session}>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
 
-            <div className="hidden md:flex gap-3 ml-4">
-              <Link href="/dashboard" className={navLinkClasses('/dashboard')}>
-                Dashboard
-              </Link>
-              <Link href="/filer" className={navLinkClasses('/filer')}>
-                Filer
-              </Link>
-            </div>
+        <div className="flex flex-col flex-1 h-full">
+          <div className="h-16 flex-shrink-0">
+            <TopNav />
           </div>
 
-          {/* Right side - avatar menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer text-gray-600 hover:text-black bg-transparent rounded-none !overflow-visible">
-                <AvatarImage
-                  src="/images/user.png"
-                  alt="user"
-                  className="bg-transparent rounded-none"
-                />
-                <AvatarFallback className="bg-transparent rounded-none">
-                  <User size={22} />
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 mt-2">
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="flex items-center gap-2 text-gray-800 cursor-pointer"
-              >
-                <LogOut size={16} /> Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-[#0F0F12] p-6">
+            {children}
+          </main>
         </div>
-      </nav>
-
-      {/* Main */}
-      <main className="pt-20 px-6 w-full max-w-6xl mx-auto flex-1">
-        <SessionContext.Provider value={session}>
-          {children}
-        </SessionContext.Provider>
-      </main>
-    </div>
-  );
+      </div>
+    </SessionContext.Provider>
+  )
 }
