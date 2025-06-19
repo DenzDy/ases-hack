@@ -4,7 +4,6 @@ import {
     Home,
     Briefcase,
     Folder,
-    Brain,
     Users,
     Calendar,
     Newspaper,
@@ -15,9 +14,16 @@ import {
     Menu,
 } from "lucide-react"
 
+import { Icon, LucideProps } from 'lucide-react';
+import { owl } from '@lucide/lab';
+
 import Link from "next/link"
 import { useState } from "react"
 import Image from "next/image"
+
+export const OwlIcon = (props: LucideProps) => (
+    <Icon iconNode={owl} {...props} />    // now size / stroke / className all work
+);
 
 export default function Sidebar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -30,22 +36,29 @@ export default function Sidebar() {
         href,
         icon: Icon,
         children,
+        highlighted = false,
     }: {
         href: string
         icon: React.ElementType
         children: React.ReactNode
+        highlighted?: boolean
     }) {
         return (
             <Link
                 href={href}
                 onClick={handleNavigation}
-                className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-[#1F1F23]"
+                className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors
+                    ${highlighted
+                        ? "bg-gradient-to-r from-orange-200 via-pink-200 to-cyan-200 text-gray-800 hover:from-orange-400 hover:via-pink-400 hover:to-cyan-400 hover:text-white"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-[#1F1F23]"
+                    }`}
             >
                 <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
                 {children}
             </Link>
         )
     }
+
 
     return (
         <>
@@ -98,7 +111,7 @@ export default function Sidebar() {
                                     <NavItem href="/documents" icon={Folder}>
                                         Documents
                                     </NavItem>
-                                    <NavItem href="/lexi" icon={Brain}>
+                                    <NavItem href="/lexi" icon={OwlIcon} highlighted>
                                         Lexi.ai
                                     </NavItem>
                                 </div>

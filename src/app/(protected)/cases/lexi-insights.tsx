@@ -1,5 +1,12 @@
-import { Bot, AlertTriangle, CheckCircle, Clock } from "lucide-react"
+import { AlertTriangle, CheckCircle, Clock } from "lucide-react"
 import type { Case } from "./types/case-types"
+
+import { Icon, LucideProps } from 'lucide-react';
+import { owl } from '@lucide/lab';
+
+export const OwlIcon = (props: LucideProps) => (
+  <Icon iconNode={owl} {...props} />
+);
 
 interface LexiInsightsProps {
   cases: Case[]
@@ -17,10 +24,10 @@ export default function LexiInsights({ cases }: LexiInsightsProps) {
   }).length
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6 border border-blue-200">
       <div className="flex items-start gap-4">
-        <div className="p-3 bg-blue-600 rounded-lg">
-          <Bot className="w-6 h-6 text-white" />
+        <div className="p-3 rounded-lg bg-gradient-to-b from-orange-200 via-pink-200 to-cyan-200 text-gray-800">
+          <OwlIcon className="w-[22px] h-[22px] stroke-[2.5]" />
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Lexi AI Insights</h3>

@@ -40,6 +40,20 @@ export default function Content() {
                 </div>
             </div>
 
+            {/* Extra Row - Announcement bar */}
+            <div
+                className="
+                    rounded-xl
+                    py-3 px-4
+                    bg-gradient-to-r from-orange-500 via-pink-500 to-cyan-500
+                    flex items-center justify-center
+                    text-white text-sm sm:text-base font-medium
+                    shadow-md">
+                <span>
+                    Lexi.ai has been upgraded to <strong>v4</strong> — enjoy deeper insight and improved drafting on Filipino case law!
+                </span>
+            </div>
+
             {/* Top Row - Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-white dark:bg-[#0F0F12] rounded-xl p-4 border border-gray-200 dark:border-[#1F1F23]">
@@ -100,20 +114,6 @@ export default function Content() {
                     </h2>
                     <UpcomingHearings />
                 </div>
-            </div>
-
-            {/* Extra Row - Announcement bar */}
-            <div
-                className="
-                    rounded-xl
-                    py-3 px-4
-                    bg-gradient-to-r from-orange-500 via-pink-500 to-cyan-500
-                    flex items-center justify-center
-                    text-white text-sm sm:text-base font-medium
-                    shadow-md">
-                <span>
-                    Lexi.ai has been upgraded to <strong>v4</strong> — enjoy deeper insight and improved drafting on Filipino case law!
-                </span>
             </div>
 
 

@@ -140,7 +140,6 @@ export default function CasesPage() {
                 </button>
             </div>
 
-            {/* Lexi AI Insights */}
             <LexiInsights cases={filteredCases} />
 
             {/* Lawyer Load Balance (conditional) */}
