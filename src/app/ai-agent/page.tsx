@@ -7,6 +7,9 @@ import { ModeToggle } from '@/components/ui/mode-toggle';
 import { FileUpload } from '@/components/ui/file-upload';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { File, Plus, AlertCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'prism-react-renderer';
 
 type Message = {
   text: string;
@@ -23,7 +26,7 @@ type FilePreview = {
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
-    { text: 'Hello! How can I help you today?', sender: 'bot' }
+    { text: 'Hello, I\'m Katwiran! How can I help you today?', sender: 'bot' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [files, setFiles] = useState<FilePreview[]>([]);
@@ -32,13 +35,30 @@ export default function ChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const customPrompt = `You are a helpful assistant powered by DeepSeek R1 via Ollama. 
-Follow these rules strictly:
-1. Never reveal your internal thought process
-2. Never use <think> or </think> tags in responses
-3. Provide concise, direct answers
-4. Maintain a friendly but professional tone
-5. Your name is Katwiran.`;
+  const customPrompt = `You are a legal document assistant, well versed in Philippine law and the Philippine legal system.
+  If needed, you will draft documents to the Philippine standard of how legal documents are made.
+  Format all responses using CLEAN Markdown with:
+  - **Bold** for important terms
+  - *Italics* for emphasis
+  - Headers using ## for sections
+  - Lists with - or 1.
+  - NO <think> blocks
+  - NO code blocks unless actual code
+  - NO triple backticks for non-code content
+
+  Example format:
+    ## Document Title
+    **Important Note:** *This is a template*
+    - Item 1
+    - Item 2
+
+  Key details: [exact details]
+
+  IMPORTANT:
+  1. You are well versed in Philippine law and the Philippine legal system
+  2. You will draft documents to the Philippine standard of how legal documents are structured
+  3. Your name is Katwiran, you are a AI legal assistant for the Philippine legal system.
+  4. You are to answer questions regarding laws and the law system in the Philippines`;
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -161,6 +181,43 @@ Follow these rules strictly:
     }
   };
 
+
+  const MarkdownRenderer = ({ content }: { content: string }) => {
+  // Remove think blocks and clean up markdown
+    const cleanedContent = content
+      .replace(/<br\s*\/?>/g, '\n\n')
+      .replace(/<think>[\s\S]*?<\/think>/g, '')
+      .replace(/```markdown/g, '')
+      .replace(/```/g, '');
+
+    return (
+      <div className="prose prose-sm dark:prose-invert max-w-none">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            h2: ({ node, ...props }) => (
+              <h2 className="text-lg font-bold mt-4 mb-2" {...props} />
+            ),
+            strong: ({ node, ...props }) => (
+              <strong className="font-semibold text-primary" {...props} />
+            ),
+            em: ({ node, ...props }) => (
+              <em className="italic text-muted-foreground" {...props} />
+            ),
+            ul: ({ node, ...props }) => (
+              <ul className="list-disc pl-5 space-y-1" {...props} />
+            ),
+            p: ({ node, ...props }) => (
+              <p className="mb-3 leading-relaxed" {...props} />
+            )
+          }}
+        >
+          {cleanedContent}
+        </ReactMarkdown>
+      </div>
+    );
+  };
+
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <div className="container px-4 mx-auto flex flex-col h-[calc(100vh-80px)] py-4 gap-4">
@@ -203,7 +260,7 @@ Follow these rules strictly:
                       ? 'bg-destructive/10 text-destructive-foreground border border-destructive/30'
                       : 'bg-muted text-muted-foreground'
                 }`}>
-                  {msg.text}
+                  <MarkdownRenderer content={msg.text} />
                 </div>
               )}
             </div>
