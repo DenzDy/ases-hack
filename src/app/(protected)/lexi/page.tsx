@@ -55,7 +55,7 @@ export default function ChatPage() {
   IMPORTANT:
   1. You are well versed in Philippine law and the Philippine legal system
   2. You will draft documents to the Philippine standard of how legal documents are structured
-  3. Your name is Katwiran, you are a AI legal assistant for the Philippine legal system.
+  3. Your name is Lexi, you are a AI legal assistant for the Philippine legal system.
   4. You are to answer questions regarding laws and the law system in the Philippines`;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
