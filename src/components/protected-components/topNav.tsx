@@ -32,7 +32,7 @@ export default function TopNav() {
 
     /* 3.  Build breadcrumb objects with cumulative hrefs           */
     const breadcrumbs = [
-        { label: "KatwiranAI", href: "/dashboard" },               // always first
+        { label: "Lexora", href: "/dashboard" },               // always first
         ...segments.map((seg, idx) => {
             const href = "/" + segments.slice(0, idx + 1).join("/")
             const label = labelMap[seg] ?? seg.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
@@ -71,9 +71,9 @@ export default function TopNav() {
                     <Image
                         src="/logo/fictional_company.jpg"
                         alt="Company logo"
-                        width={32}
-                        height={32}
-                        className="rounded-sm shadow-sm"
+                        width={200}
+                        height={200}
+                        className="h-[1.5rem] w-auto object-contain rounded-sm shadow-sm"
                     />
                 </div>
 

@@ -23,7 +23,7 @@ export default function Hero() {
             {/* Section 0 — Announcement bar */}
             <div className="w-full bg-gradient-to-r from-orange-500 via-indigo-500 to-cyan-400 py-2 px-4 text-center text-sm text-white">
                 <span className="font-medium">
-                    Katwiran is launching this July in <span className="font-semibold">Metro Manila</span> — early sign-ups get <span className="font-semibold">free AI legal tools</span> for 30 days.
+                    Lexora is launching this July in <span className="font-semibold">Metro Manila</span> — early sign-ups get <span className="font-semibold">free AI legal tools</span> for 30 days.
                 </span>
 
                 <a
@@ -52,9 +52,9 @@ export default function Hero() {
                     <div className="flex items-center gap-10">
                         <Image
                             src="/logo/logo.png"
-                            alt="Katwiran logo"
-                            width={100}           // required
-                            height={40}           // required
+                            alt="Lexora logo"
+                            width={200}
+                            height={200}
                             className="h-[3rem] w-auto object-contain"
                         />
 

@@ -129,7 +129,7 @@ export default function CasesPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Cases</h1>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Case Management.</h1>
                     <p className="text-gray-600 dark:text-gray-400">Manage your legal cases and track progress</p>
                 </div>
                 <button

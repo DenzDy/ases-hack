@@ -13,15 +13,15 @@ const Footer: React.FC = () => {
                     <div className="flex items-center space-x-2">
                         <Image
                             src="/logo/logo.png"
-                            alt="Katwiran logo"
+                            alt="Lexora logo"
                             width={100}           // required
                             height={40}           // required
                             className="h-[3rem] w-auto object-contain"
                         />
-                        <span className="font-bold text-gray-800">Katwiran.AI</span>
+                        <span className="font-bold text-gray-800">Lexora</span>
                     </div>
-                    <p>© 2025 Katwiran, Inc. All Rights Reserved.</p>
-                    <p>The Katwiran name and logo are registered trademarks.</p>
+                    <p>© 2025 Lexora, Inc. All Rights Reserved.</p>
+                    <p>The Lexora name and logo are registered trademarks.</p>
                     <div className="flex items-center gap-6 text-orange-500 font-medium mt-2">
                         <a href="#" className="hover:underline">Privacy Policy</a>
                         <a href="#" className="hover:underline">Terms of Service</a>

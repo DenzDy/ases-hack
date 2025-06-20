@@ -12,7 +12,6 @@ import {
     Settings,
     HelpCircle,
     Menu,
-    Bot,
 } from "lucide-react"
 
 import { Icon, LucideProps } from 'lucide-react';
@@ -85,13 +84,13 @@ export default function Sidebar() {
                         <div className="flex items-center gap-3">
                             <Image
                                 src="/logo/logo.png"
-                                alt="KatwiranAI"
-                                width={32}
-                                height={32}
-                                className="flex-shrink-0"
+                                alt="Lexora"
+                                width={200}
+                                height={200}
+                                className="h-[2.5rem] w-auto object-contain"
                             />
                             <span className="text-lg font-semibold hover:cursor-pointer text-gray-900 dark:text-white font-serif">
-                                KatwiranAI
+                                Lexora
                             </span>
                         </div>
                     </Link>
