@@ -26,7 +26,7 @@ type FilePreview = {
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
-    { text: 'Hello, I\'m Katwiran! How can I help you today?', sender: 'bot' }
+    { text: 'Hello, I\'m Lexi! How can I help you today?', sender: 'bot' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [files, setFiles] = useState<FilePreview[]>([]);

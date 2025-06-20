@@ -12,6 +12,7 @@ import {
     Settings,
     HelpCircle,
     Menu,
+    Bot,
 } from "lucide-react"
 
 import { Icon, LucideProps } from 'lucide-react';
